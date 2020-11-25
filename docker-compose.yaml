@@ -1,0 +1,14 @@
+version: "3"
+services:
+  web:
+    environment:
+      - PORT=8080
+      - APP_MODULE=coursenotify:create_app()
+      - ENV=development
+    build: ./
+    ports: [ "80:8080" ]
+#    volumes: [ "./coursenotify:/app/coursenotify" ]
+  mongo:
+    image: "mongo"
+    ports: ["27017:27017"]
+    volumes: ["/data/db"]
