@@ -1,13 +1,17 @@
 import os
 
 from flask import Flask
+import logging
 
-from coursenotify import db
+from coursenotify import manager
 
 
 def create_app():
     # create and configure the app
-    app = Flask(__name__, instance_relative_config=True)
+    app = Flask(__name__,
+                instance_relative_config=True,
+                static_folder="static/frontend/dist/",
+                static_url_path="")
     app.app_context()
 
     env = os.environ.get("ENV")
@@ -24,9 +28,15 @@ def create_app():
 
     if app.config["UPDATE_COLLECTION"]:
         with app.app_context():
-            db.init_course_db()
+            manager.init_course_db()
 
+    # register blueprints
     from coursenotify.views.index import frontend
+    from coursenotify.views.api import api
     app.register_blueprint(frontend)
+    app.register_blueprint(api)
+
+    # logging
+    app.logger.setLevel(logging.INFO)
 
     return app

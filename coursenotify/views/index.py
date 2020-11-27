@@ -1,8 +1,13 @@
-from flask import Blueprint
+from flask import Blueprint, current_app, send_file, url_for
+import os
 
-frontend = Blueprint("admin", __name__, url_prefix="/")
+frontend = Blueprint("index",
+                     __name__,
+                     url_prefix="/",
+                     static_folder="static/frontend/dist/",
+                     static_url_path="")
 
 
 @frontend.route("/")
 def index():
-    return "HELLO WORLD WHYYYYYY"
+    return send_file(os.path.join(current_app.config["VUE_DIST_DIR"], "index.html"))
