@@ -1,7 +1,7 @@
+import logging
 import os
 
 from flask import Flask
-import logging
 
 from coursenotify import manager
 
@@ -25,6 +25,15 @@ def create_app():
         os.makedirs(app.instance_path)
     except OSError:
         pass
+    # logging
+    app.logger.setLevel(logging.INFO)
+
+    with app.app_context():
+        try:
+            manager.check_db_connection()
+        except Exception:
+            app.logger.error("Fail to connect DB")
+            return None
 
     if app.config["UPDATE_COLLECTION"]:
         with app.app_context():
@@ -35,8 +44,5 @@ def create_app():
     from coursenotify.views.api import api
     app.register_blueprint(frontend)
     app.register_blueprint(api)
-
-    # logging
-    app.logger.setLevel(logging.INFO)
 
     return app

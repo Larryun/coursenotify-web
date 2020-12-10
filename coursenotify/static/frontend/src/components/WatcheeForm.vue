@@ -48,24 +48,26 @@
       </b-form-group>
 
       <b-form-group id="crn-input-group" label="School:">
+        <!-- cannot use this directly because options will be erased and the values become undefined-->
+        <!--v-model="selectedCRN"-->
         <v-select label="crn"
-                  v-model="form.crn"
+                  ref="crn_select"
+                  multiple
                   :filterable="false"
                   :options="courseOptions"
                   :reduce="course => course.crn"
                   @search="onSearchCRN"
-                  @search:focus="updateNoOpMsg"
+                  @search:focus="validateCRN"
+                  @input="onSelectInput"
         >
           <template #search="{attributes, events}">
             <input
                 class="vs__search"
-                :required="!selected"
+                :required="!selectInputFilled"
                 v-bind="attributes"
                 v-on="events"
             />
           </template>
-          :
-
           <template slot="no-options">
             {{ noOptionsMsg }}
           </template>
@@ -107,7 +109,7 @@ export default {
     return {
       form: {
         email: "",
-        crn: "",
+        crn: [],
         school: ""
       },
       alertMessage: "",
@@ -119,20 +121,25 @@ export default {
         crn_input: null,
         school_input: null,
       },
+      typedCRN: "",     // used for validation
       courseOptions: [],
       noOptionsMsg: "Please choose a school",
-      selected: false,
-      selectedValue: "",
+    }
+  },
+  computed: {
+    selectInputFilled() {
+      console.log("input filled", this.form.crn)
+      return this.form.crn.length !== 0;
     }
   },
   methods: {
     submitWatcheeForm(e) {
       e.preventDefault();
-      console.log(this.form)
+      // console.log("submitting" + this.form);
       this.submitBtnDisabled = true;
+      this.showAlert = false;
       this.alertType = "";
       this.alertMessage = "";
-      this.showAlert = false;
       this.state = {
         email_input: null,
         crn_input: null,
@@ -141,12 +148,13 @@ export default {
       axios.post(process.env.VUE_APP_API_URL + "/add", this.form).then((res) => {
         this.updateAlert(res.data);
         this.submitBtnDisabled = false;
-        this.selected = false;
+      }).catch((res) => {
+        this.updateAlert(res.data);
+        this.submitBtnDisabled = false;
       })
     },
     updateAlert(result) {
       this.showAlert = true;
-      console.log(result)
       if (result["status"] === "ok") {
         this.alertType = "success";
         this.alertMessage = `Added ${this.form.email} for course ${this.form.crn}`;
@@ -166,45 +174,59 @@ export default {
       }
     },
     onSearchCRN(crn, loading) {
+      console.log(crn)
       loading(true);
       this.courseOptions = [];
-      if (this.form.school === "") {
-        this.noOptionsMsg = "Please choose a school";
-      } else if (crn === "") {
-        this.noOptionsMsg = "Please enter a crn";
-      } else if (crn.length < 3) {
-        this.noOptionsMsg = "Please enter more digits";
-      } else {
+      this.typedCRN = crn;
+      if (this.validateCRN()) {
+        this.noOptionsMsg = "Loading...";
         this.searchCRN(crn, loading, this);
       }
       loading(false)
     },
+    /**
+     * search for the crn
+     */
     searchCRN: _.debounce((crn, loading, vm) => {
-      vm.noOptionsMsg = "Loading...";
       axios.post(process.env.VUE_APP_API_URL + "/query", {school: vm.form.school, crn: crn}).then((res) => {
-        if (res.data["status"] !== "ok" || res.data["course"].length === 0) {
-          vm.noOptionsMsg = "CRN not found in the database, let me know if you believe this is an error";
+        if ("server_error" in res.data) {
+          vm.noOptionsMsg = "Server error...";
+        } else if (res.data["status"] !== "ok" || res.data["course"].length === 0) {
+          vm.noOptionsMsg = "CRN not found in the database";
         } else {
           vm.courseOptions = res.data["course"];
-          vm.selected = true;
         }
+      }).catch((res) => {
+        console.log(res);
       })
-    }, 500),
-    mutedOrDanger(s) {
-      return s === false ? "danger" : "muted";
-    },
-    updateNoOpMsg() {
+    }, 100),
+    /**
+     * update validate message for crn select input
+     * @returns {boolean}
+     */
+    validateCRN() {
       this.courseOptions = [];
       if (this.form.school === "") {
-        this.noOptionsMsg = "Please choose a school";
-      } else {
+        this.noOptionsMsg = "Please choose a school first";
+      } else if (this.typedCRN === "") {
         this.noOptionsMsg = "Please enter a crn";
+      } else if (this.typedCRN.length < 3) {
+        this.noOptionsMsg = "Please enter more digits";
+      } else {
+        return true;
       }
     },
     resetSelect() {
-      this.selectedValue = "";
-      this.form.crn = "";
-    }
+      this.form.crn = [];
+      // clear current selected options
+      this.$refs.crn_select.clearSelection();
+    },
+    onSelectInput(e) {
+      this.form.crn = e
+    },
+    mutedOrDanger(s) {
+      return s === false ? "danger" : "muted";
+    },
   }
 }
 </script>
@@ -214,4 +236,10 @@ export default {
   width: 100%;
 }
 
+</style>
+
+<style>
+.vs__search {
+  line-height: 1.5 !important;
+}
 </style>

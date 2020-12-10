@@ -24,6 +24,10 @@ def get_watcher_manager(school):
     return g.watcher_manager[school]
 
 
+def check_db_connection():
+    return get_course_manager("DA").check_mongo_connection() and get_watcher_manager("DA").check_mongo_connection()
+
+
 def init_course_db():
     get_course_manager("DA").update_course_collection()
     get_course_manager("FH").update_course_collection()

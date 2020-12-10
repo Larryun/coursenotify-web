@@ -17,8 +17,13 @@ def add():
         watcher_manager = get_watcher_manager(data["school"])
         validate_email(data["email"], check_deliverability=False)
         if watcher_manager:
-            watcher_manager.add_watchee(data["email"], data["crn"])
-            result["status"] = "ok"
+            if not isinstance(data["crn"], list):
+                result["status"] = "failed"
+                result["crn"] = "expected list"
+            else:
+                for crn in data["crn"]:
+                    watcher_manager.add_watchee(data["email"], str(crn))
+                result["status"] = "ok"
         else:
             current_app.logger.error("<%s> school %s not valid" % (data["email"], data["school"]))
             result["school"] = "not valid"
@@ -28,7 +33,8 @@ def add():
     except EmailNotValidError:
         current_app.logger.error("<%s> email not valid" % (data["email"]))
         result["email"] = "not valid"
-    except:
+    except Exception as e:
+        current_app.logger.error(str(e))
         result["server_error"] = 1
     return jsonify(result)
 
@@ -39,16 +45,19 @@ def query_course():
     result = {"status": "failed"}
     data = request.get_json()
     try:
-        course_m = get_course_manager(data["school"])
-        courses = course_m.course_cc.find({"crn": {"$regex": "^" + str(data["crn"])}},
-                                          {"_id": 0,
-                                           "title": 1,
-                                           "name": 1,
-                                           "crn": 1,
-                                           "status": 1, })
-        # course = course_m.find_course_by_crn(str(data["crn"]),
-        result["course"] = list(courses)
-        result["status"] = "ok"
+        if len(str(data["crn"])) < 3:
+            result["status"] = "failed"
+            result["course"] = "crn length to short"
+        else:
+            course_m = get_course_manager(data["school"])
+            courses = course_m.course_cc.find({"crn": {"$regex": "^" + str(data["crn"])}},
+                                              {"_id": 0,
+                                               "title": 1,
+                                               "name": 1,
+                                               "crn": 1,
+                                               "status": 1, })
+            result["course"] = list(courses)
+            result["status"] = "ok"
     except CRNNotFound:
         result["course"] = "not found"
     except Exception as e:
