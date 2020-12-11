@@ -14,7 +14,7 @@ def get_course_manager(school):
 
 
 def get_watcher_manager(school):
-    if school not in ["DA", "FH"]:
+    if school.upper() not in ["DA", "FH"]:
         return None
     if 'watcher_manager' not in g:
         g.watcher_manager = {school: WatcherManager(current_app.config["MANAGER_CONFIG"], school)}

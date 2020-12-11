@@ -31,8 +31,9 @@ def create_app():
     with app.app_context():
         try:
             manager.check_db_connection()
-        except Exception:
+        except Exception as e:
             app.logger.error("Fail to connect DB")
+            app.logger.error(str(e))
             return None
 
     if app.config["UPDATE_COLLECTION"]:
