@@ -149,7 +149,7 @@ export default {
         this.updateAlert(res.data);
         this.submitBtnDisabled = false;
       }).catch((res) => {
-        this.updateAlert(res.data);
+        this.updateAlert(res.response.data);
         this.submitBtnDisabled = false;
       })
     },
@@ -196,8 +196,10 @@ export default {
         } else {
           vm.courseOptions = res.data["course"];
         }
-      }).catch((res) => {
+      }).catch((error) => {
+        let res = error.response;
         console.log(res);
+
       })
     }, 100),
     /**

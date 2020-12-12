@@ -1,27 +1,30 @@
+from typing import Union
+
 from cn_v2.manager import CourseManager, WatcherManager
 from flask import current_app, g
 
 
-def get_course_manager(school):
-    if school not in ["DA", "FH"]:
-        return None
-    if 'course_manager' not in g:
-        g.course_manager = {school: CourseManager(current_app.config["MANAGER_CONFIG"], school)}
-    if school not in g.course_manager:
-        g.course_manager[school] = CourseManager(current_app.config["MANAGER_CONFIG"], school)
+def get_manager(school, which: Union[CourseManager, WatcherManager]) -> Union[CourseManager, WatcherManager]:
+    if which == CourseManager:
+        n = "course_manager"
+    elif which == WatcherManager:
+        n = "watcher_manager"
+    else:
+        raise RuntimeError("Expected subclass of BaseManager, got %s" % which)
+    if n not in g:
+        g.n = {school: which(current_app.config["MANAGER_CONFIG"], school)}
+    if school not in g.n:
+        g.n[school] = which(current_app.config["MANAGER_CONFIG"], school)
 
-    return g.course_manager[school]
+    return g.n[school]
 
 
-def get_watcher_manager(school):
-    if school.upper() not in ["DA", "FH"]:
-        return None
-    if 'watcher_manager' not in g:
-        g.watcher_manager = {school: WatcherManager(current_app.config["MANAGER_CONFIG"], school)}
-    if school not in g.watcher_manager:
-        g.watcher_manager[school] = WatcherManager(current_app.config["MANAGER_CONFIG"], school)
+def get_course_manager(school) -> CourseManager:
+    return get_manager(school, CourseManager)
 
-    return g.watcher_manager[school]
+
+def get_watcher_manager(school) -> WatcherManager:
+    return get_manager(school, WatcherManager)
 
 
 def check_db_connection():
