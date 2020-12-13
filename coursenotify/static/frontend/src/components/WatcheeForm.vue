@@ -12,12 +12,12 @@
             type="email"
             required
             placeholder="Enter email"
-            :state="state['email_input']"
+            :state="inputStates['email_input']"
         ></b-form-input>
-        <b-form-text :text-variant="mutedOrDanger(state['email_input'])">
+        <b-form-text :text-variant="mutedOrDanger(inputStates['email_input'])">
           I'll notify you through this email
         </b-form-text>
-        <b-form-invalid-feedback :state="state['email_input']">
+        <b-form-invalid-feedback :state="inputStates['email_input']">
           The email {{ form.email }} is not a valid email
         </b-form-invalid-feedback>
       </b-form-group>
@@ -28,7 +28,7 @@
                             name="school"
                             required
                             @change="resetSelect"
-                            :state="state['school_input']"
+                            :state="inputStates['school_input']"
         >
           <b-row>
             <b-col>
@@ -39,10 +39,10 @@
             </b-col>
           </b-row>
         </b-form-radio-group>
-        <b-form-text :text-variant="mutedOrDanger(state['school_input'])">
+        <b-form-text :text-variant="mutedOrDanger(inputStates['school_input'])">
           The school where the course is provided
         </b-form-text>
-        <b-form-invalid-feedback :state="state['school_input']">
+        <b-form-invalid-feedback :state="inputStates['school_input']">
           Invalid school choice {{ form.school }}!! WTF?
         </b-form-invalid-feedback>
       </b-form-group>
@@ -116,7 +116,7 @@ export default {
       alertType: "",
       showAlert: false,
       submitBtnDisabled: false,
-      state: {
+      inputStates: {
         email_input: null,
         crn_input: null,
         school_input: null,
@@ -137,14 +137,8 @@ export default {
       e.preventDefault();
       // console.log("submitting" + this.form);
       this.submitBtnDisabled = true;
-      this.showAlert = false;
-      this.alertType = "";
-      this.alertMessage = "";
-      this.state = {
-        email_input: null,
-        crn_input: null,
-        school_input: null,
-      }
+      this.resetAlert();
+      this.resetInputStates();
       axios.post(process.env.VUE_APP_API_URL + "/add", this.form).then((res) => {
         this.updateAlert(res.data);
         this.submitBtnDisabled = false;
@@ -160,13 +154,13 @@ export default {
         this.alertMessage = `Added ${this.form.email} for course ${this.form.crn}`;
       }
       if (result["crn"] === "not valid") {
-        this.state.crn_input = false;
+        this.inputStates.crn_input = false;
       }
       if (result["school"] === "not valid") {
-        this.state.school_input = false;
+        this.inputStates.school_input = false;
       }
       if (result["email"] === "not valid") {
-        this.state.email_input = false;
+        this.inputStates.email_input = false;
       }
       if ("server_error" in result) {
         this.alertType = "danger";
@@ -174,7 +168,7 @@ export default {
       }
     },
     onSearchCRN(crn, loading) {
-      console.log(crn)
+      // console.log(crn)
       loading(true);
       this.courseOptions = [];
       this.typedCRN = crn;
@@ -185,21 +179,20 @@ export default {
       loading(false)
     },
     /**
-     * search for the crn
+     * search for the crn with prefix
      */
     searchCRN: _.debounce((crn, loading, vm) => {
       axios.post(process.env.VUE_APP_API_URL + "/query", {school: vm.form.school, crn: crn}).then((res) => {
-        if ("server_error" in res.data) {
-          vm.noOptionsMsg = "Server error...";
-        } else if (res.data["status"] !== "ok" || res.data["course"].length === 0) {
+        if (res.data["status"] !== "ok" || res.data["course"].length === 0) {
           vm.noOptionsMsg = "CRN not found in the database";
         } else {
           vm.courseOptions = res.data["course"];
         }
       }).catch((error) => {
         let res = error.response;
-        console.log(res);
-
+        if ("server_error" in res.data) {
+          vm.noOptionsMsg = "Server error...";
+        }
       })
     }, 100),
     /**
@@ -222,6 +215,18 @@ export default {
       this.form.crn = [];
       // clear current selected options
       this.$refs.crn_select.clearSelection();
+    },
+    resetAlert() {
+      this.showAlert = false;
+      this.alertType = "";
+      this.alertMessage = "";
+    },
+    resetInputStates() {
+      this.inputStates = {
+        email_input: null,
+        crn_input: null,
+        school_input: null,
+      }
     },
     onSelectInput(e) {
       this.form.crn = e

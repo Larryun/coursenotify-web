@@ -63,11 +63,11 @@ def query_course():
             result["status"] = "ok"
             status_code = 200
     except CRNNotFound as e:
-        result["course"] = "not found"
         current_app.logger.error(str(e))
+        result["course"] = "not found"
         status_code = 404
     except Exception as e:
-        print(str(e))
+        current_app.logger.error(str(e))
         result["server_error"] = 1
         status_code = 500
 
@@ -84,12 +84,19 @@ def remove_watch():
         remove_key = data["remove_key"]
         watcher_m = get_watcher_manager(data["school"])
         course_m = get_course_manager(data["school"])
+
+        # remove
         watcher_m.remove_watchee_by_remove_key(remove_key)
+
+        # find watcher with the remove key
         removed_watcher = watcher_m.find_watcher_by_remove_key(remove_key)
+
+        # build json with email and the removed course
         email = removed_watcher["email_addr"]
         crn = list(filter(lambda x: x["remove_key"] == remove_key, removed_watcher["crn"]))
         result["email"] = email
         result["class_name"] = course_m.find_course_by_id(crn[0]["course_obj_id"])["name"]
+
         result["status"] = "ok"
         status_code = 200
     except RemoveKeyNotFound as e:
