@@ -13,6 +13,7 @@ api = Blueprint("api", __name__, url_prefix="/api")
 def add():
     result = {"status": "failed"}
     status_code = 500
+    # TODO add limit check
     try:
         data = request.get_json()
         watcher_manager = get_watcher_manager(data["school"])
@@ -22,16 +23,15 @@ def add():
             result["crn"] = "expected list"
             status_code = 400
         else:
-            for crn in data["crn"]:
-                watcher_manager.add_watchee(data["email"], str(crn))
+            watcher_manager.add_all_watchee(data["email"], data["crn"], True)
             result["status"] = "ok"
             status_code = 200
-            # TODO add send confirmation email when done
     except SchoolInvalid:
         current_app.logger.error("<%s> school %s not valid" % (data["email"], data["school"]))
         result["school"] = "not valid"
         status_code = 400
     except CRNNotFound:
+        #TODO response with specific not found crn
         current_app.logger.error("<%s> CRN %s not found" % (data["email"], data["crn"]))
         result["crn"] = "not valid"
         status_code = 404
@@ -40,7 +40,7 @@ def add():
         result["email"] = "not valid"
         status_code = 400
     except Exception as e:
-        current_app.logger.error(str(e))
+        current_app.logger.error("add/ " + str(e))
         result["server_error"] = 1
         status_code = 500
     return jsonify(result), status_code

@@ -203,6 +203,8 @@ export default {
       this.courseOptions = [];
       if (this.form.school === "") {
         this.noOptionsMsg = "Please choose a school first";
+      } else if(this.form.crn.length >= 4) {
+        this.noOptionsMsg = "Select maximum 4 course at a time";
       } else if (this.typedCRN === "") {
         this.noOptionsMsg = "Please enter a crn";
       } else if (this.typedCRN.length < 3) {
