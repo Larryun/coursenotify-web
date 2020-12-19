@@ -15,6 +15,7 @@ def create_app():
     app.app_context()
 
     env = os.environ.get("ENV")
+    print("Current Environment: %s" % env)
     if env is None or env == "development":
         app.config.from_pyfile("dev/config.dev.py", silent=False)
     elif env == "production":
@@ -32,6 +33,7 @@ def create_app():
         try:
             manager.check_db_connection()
         except Exception as e:
+            print(str(e))
             app.logger.error("Fail to connect DB")
             app.logger.error(str(e))
             return None
@@ -41,9 +43,7 @@ def create_app():
             manager.init_course_db()
 
     # register blueprints
-    from coursenotify.views.index import frontend
     from coursenotify.views.api import api
-    app.register_blueprint(frontend)
     app.register_blueprint(api)
 
     return app

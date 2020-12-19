@@ -1,10 +1,11 @@
-from typing import Union
+from typing import Union, Type
 
 from cn_v2.manager import CourseManager, WatcherManager
 from flask import current_app, g
 
 
-def get_manager(school, which: Union[CourseManager, WatcherManager]) -> Union[CourseManager, WatcherManager]:
+def get_manager(school, which: Union[Type[CourseManager], Type[WatcherManager]]) -> Union[
+    CourseManager, WatcherManager]:
     if which == CourseManager:
         n = "course_manager"
     elif which == WatcherManager:
