@@ -2,3 +2,6 @@
 /instance/
 /npm-debug.log
 /cn_v2.egg-info/
+docker-compose.prod.local.yaml
+docker-compose.prod.yaml
+
