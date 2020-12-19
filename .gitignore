@@ -5,3 +5,4 @@
 docker-compose.prod.local.yaml
 docker-compose.prod.yaml
 
+/docker-compose.staging.local.yaml

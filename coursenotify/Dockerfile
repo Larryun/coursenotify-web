@@ -6,6 +6,7 @@ RUN mkdir /app/data
 RUN mkdir /app/instance
 COPY ./coursenotify /app/coursenotify/
 COPY ./instance /app/instance/
+COPY ./script /app/script/
 WORKDIR /app
 
 #RUN pip install -e "git+https://github.com/Larryun/coursenotify_v2#egg=cn_v2"
