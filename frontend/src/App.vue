@@ -3,7 +3,7 @@
     <router-view></router-view>
     <footer>
         <span class="font-weight-light text-muted">
-          <a href="/">FHDA CourseNotify</a> v1.2 | Email: <a href="mailto:coursenotfy@gmail.com">coursenotify@gmail.com</a>
+          <a href="/">FHDA CourseNotify</a> v1.2 | Email: <a href="mailto:coursenotfy.da@gmail.com">coursenotify.da@gmail.com</a>
           <br>
           Made by a <del class="c">De Anza College</del> UC Berkeley student
           <br>
