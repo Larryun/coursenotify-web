@@ -4,6 +4,8 @@ from datetime import datetime
 
 from cn_v2.manager import WatcherManager, CourseManager
 
+term_code = {"DA": "202132", "FH": "202131"}
+
 arg_parser = ArgumentParser(description="Course Notify Manager")
 
 arg_parser.add_argument("--log_file",
@@ -55,22 +57,19 @@ def create_logger():
     return logger
 
 
-course_manager = CourseManager(school=args.school, config_file=args.config_file)
+course_manager = CourseManager(school=args.school, config_file=args.config_file, term_code=term_code)
 watcher_manager = WatcherManager(school=args.school, config_file=args.config_file)
 
 
 def update_course():
-    print(datetime.now().strftime("%Y-%m-%d %H:%M:%S") + " Update Course")
     course_manager.update_course_collection()
 
 
 def update_seats():
-    print(datetime.now().strftime("%Y-%m-%d %H:%M:%S") + " Update Seats")
     course_manager.update_course_collection()
 
 
 def send_notification():
-    print(datetime.now().strftime("%Y-%m-%d %H:%M:%S") + " Send Notification")
     watcher_manager.notify_all()
 
 

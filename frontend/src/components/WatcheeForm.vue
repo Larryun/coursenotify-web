@@ -83,7 +83,7 @@
           </template>
         </v-select>
         <b-form-text>
-          The course that you want to watch
+          The CRN of the course that you want to watch (Eg. 33368)
         </b-form-text>
 
       </b-form-group>
@@ -204,7 +204,7 @@ export default {
       if (this.form.school === "") {
         this.noOptionsMsg = "Please choose a school first";
       } else if(this.form.crn.length >= 4) {
-        this.noOptionsMsg = "Select maximum 4 course at a time";
+        this.noOptionsMsg = "You can only select maximum 4 course at a time";
       } else if (this.typedCRN === "") {
         this.noOptionsMsg = "Please enter a crn";
       } else if (this.typedCRN.length < 3) {

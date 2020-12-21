@@ -2,16 +2,37 @@ version: "3"
 services:
   web:
     environment:
-      - PORT=8080
-      - APP_MODULE=coursenotify:create_app()
-      - ENV=production
-    build: ./
-    ports: [ "80:8080" ]
-#    volumes: [ "./coursenotify:/app/coursenotify" ]
+      - ENV=development
+    build:
+      context: ./
+      dockerfile: coursenotify/Dockerfile
+    command: gunicorn coursenotify:create_app() --bind 0.0.0.0:8080
+    expose: [ "8080" ]
     depends_on:
       - mongodb
-  mongodb:        # this name need to match the url to MongoClient url "mongodb://
-    image: "mongo"
+  mongodb:
+    image: mongo:latest
     container_name: mongodb
-    ports: ["27017:27017"]
-    volumes: ["f:/mongo/data:/data/db"]
+    command: mongod --auth
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    ports: [ "27017:27017" ]
+    volumes: [ "/mongo/data:/data/db" ]
+
+  nginx:
+    build: ./nginx
+    ports: [ "80:80" ]
+    depends_on:
+      - web
+      - frontend
+    volumes: [ "static-files:/app/static" ]
+
+  frontend:
+    build: ./frontend
+    environment:
+      - NODE_ENV=production
+    volumes: [ "static-files:/app/dist" ]
+
+volumes:
+  static-files:

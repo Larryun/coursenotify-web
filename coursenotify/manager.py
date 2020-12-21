@@ -13,8 +13,9 @@ def get_manager(school, which: Union[Type[CourseManager], Type[WatcherManager]])
     else:
         raise RuntimeError("Expected subclass of BaseManager, got %s" % which)
     if n not in g:
-        g.n = {school: which(current_app.config["MANAGER_CONFIG"], school)}
-    if school not in g.n:
+        g.n = {school: which(config_file=current_app.config["MANAGER_CONFIG"],
+                             school=school)}
+    elif school not in g.n:
         g.n[school] = which(current_app.config["MANAGER_CONFIG"], school)
 
     return g.n[school]

@@ -2,9 +2,13 @@
   <div id="app">
     <router-view></router-view>
     <footer>
-      <span class="font-weight-light text-muted">
-        CourseNotify v1.2 | Email: coursenotify@gmail.com
-      </span>
+        <span class="font-weight-light text-muted">
+          <a href="/">FHDA CourseNotify</a> v1.2 | Email: <a href="mailto:coursenotfy@gmail.com">coursenotify@gmail.com</a>
+          <br>
+          Made by a <del class="c">De Anza College</del> UC Berkeley student
+          <br>
+          © 2020 CourseNotify
+        </span>
     </footer>
   </div>
 </template>
@@ -54,6 +58,7 @@ footer {
   display: flex !important;
   justify-content: center;
   padding: 5px;
+  text-align: center;
 }
 
 </style>
