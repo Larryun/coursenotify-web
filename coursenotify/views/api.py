@@ -46,6 +46,14 @@ def add():
     return jsonify(result), status_code
 
 
+def validate_crn(crn):
+    if len(crn) > 7:
+        return False
+    for i in crn:
+        if not ('0' < i < '9'):
+            return False
+    return True
+
 @api.route("/query", methods=["POST"])
 @cross_origin()
 def query_course():
@@ -53,12 +61,16 @@ def query_course():
     status_code = 500
     try:
         data = request.get_json()
+        crn = data["crn"]
         if len(str(data["crn"])) < 3:
             result["course"] = "crn length to short"
-            result["status"] = "failed"
             status_code = 400
+        elif not validate_crn(crn):
+            result["course"] = []
+            result["status"] = "ok"
+            status_code = 200
         else:
-            courses = get_course_manager(data["school"]).find_course_by_crn_prefix(data["crn"])
+            courses = get_course_manager(data["school"]).find_course_by_crn_prefix(crn)
             result["course"] = list(courses)
             result["status"] = "ok"
             status_code = 200
