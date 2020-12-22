@@ -47,7 +47,7 @@
         </b-form-invalid-feedback>
       </b-form-group>
 
-      <b-form-group id="crn-input-group" label="School:">
+      <b-form-group id="crn-input-group" label="CRN:">
         <!-- cannot use this directly because options will be erased and the values become undefined-->
         <!--v-model="selectedCRN"-->
         <v-select label="crn"
