@@ -50,7 +50,7 @@ def validate_crn(crn):
     if len(crn) > 7:
         return False
     for i in crn:
-        if not ('0' < i < '9'):
+        if not ('0' <= i <= '9'):
             return False
     return True
 
