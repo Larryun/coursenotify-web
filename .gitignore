@@ -1,5 +1,7 @@
 /venv/
-/instance/
+/instance/*
+!/instance/config.base.py
+!/instance/manager.base.yaml
 /npm-debug.log
 /cn_v2.egg-info/
 docker-compose.prod.local.yaml

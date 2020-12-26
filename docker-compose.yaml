@@ -1,8 +1,9 @@
+#### A sample docker-compose for development
 version: "3"
 services:
   web:
     environment:
-      - ENV=development
+      - ENV=devlopment
     build:
       context: ./
       dockerfile: coursenotify/Dockerfile
@@ -31,8 +32,8 @@ services:
   frontend:
     build: ./frontend
     environment:
-      - NODE_ENV=production
-    volumes: [ "static-files:/app/dist" ]
+      - NODE_ENV=development
+    volumes: [ "static-files:/app/dist"]
 
 volumes:
   static-files:

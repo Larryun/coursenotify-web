@@ -1,0 +1,27 @@
+---
+data-path: "../data/"
+host-url: "http://coursenotify.com"
+debug: true
+manager:
+  db:
+    ip: "mongodb"
+    port: 27017
+    username: "admin"
+    pass: "admin"
+    selectionTimeout: 500
+    db_name: ""
+  collection:
+    fh:
+      course: "fh_course"
+      watcher: "fh_watcher"
+    da:
+      course: "da_course"
+      watcher: "da_watcher"
+email:
+  username: "youremail@gmail.com"
+  pass: ""
+  template:
+    dir: "/app/coursenotify/templates/email"
+    notify: "notify_email.html"
+    confirm: "confirmation_email.html"
+

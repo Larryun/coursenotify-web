@@ -1,6 +1,6 @@
 <template>
   <div id="form-container" class="mt-5">
-    <h1 id="form-header" class="display-4">CourseNotify</h1>
+    <h1 id="form-header" class="display-4">FHDA CourseNotify</h1>
     <div id="form-header-description" class="font-weight-light mb-2">
       <span>I will notify you when a course is available to add.</span>
     </div>
