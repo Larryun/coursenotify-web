@@ -43,7 +43,7 @@ def create_app():
             manager.init_course_db()
 
     # register blueprints
-    from coursenotify.views.api import api
-    app.register_blueprint(api)
+    from coursenotify.views.api import api_bp as api_blueprint
+    app.register_blueprint(api_blueprint, url_prefix="/api")
 
     return app
