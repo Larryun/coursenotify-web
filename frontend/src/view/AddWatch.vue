@@ -5,7 +5,7 @@
       <span>I will notify you when a course is available to add.</span>
     </div>
     <b-alert variant="info" show>
-      Current course database: <b>2021 Winter</b><br>
+      Current course database: <b>2021 Spring</b><br>
     </b-alert>
     <WatcheeForm id="watch-form"></WatcheeForm>
   </div>
