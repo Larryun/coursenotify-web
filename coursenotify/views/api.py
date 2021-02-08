@@ -2,28 +2,13 @@ from cn_v2.exception import *
 from email_validator import validate_email, EmailNotValidError
 from flask import Blueprint, request, jsonify, current_app
 from flask_cors import cross_origin
-from flask_restful import Api, Resource, fields, marshal_with, reqparse
 
 from coursenotify.manager import get_watcher_manager, get_course_manager
 
-parser = reqparse.RequestParser()
-parser.add_argument("t")
-
-test_fileds = {
-    "t": fields.String
-}
+api = Blueprint("api", __name__, url_prefix="/api")
 
 
-class Watcher(Resource):
-    def post(self):
-        return parser.parse_args()["t"]
-
-
-blueprint = Blueprint("blueprint", __name__)
-api = Api(blueprint)
-
-
-@blueprint.route("/add", methods=["POST"])
+@api.route("/add", methods=["POST"])
 @cross_origin()
 def add():
     result = {"status": "failed"}
@@ -46,7 +31,7 @@ def add():
         result["school"] = "not valid"
         status_code = 400
     except CRNNotFound:
-        # TODO response with specific not found crn
+        #TODO response with specific not found crn
         current_app.logger.error("<%s> CRN %s not found" % (data["email"], data["crn"]))
         result["crn"] = "not valid"
         status_code = 404
@@ -69,8 +54,8 @@ def validate_crn(crn):
             return False
     return True
 
-
-@blueprint.route("/query", methods=["POST"])
+@api.route("/query", methods=["POST"])
+@cross_origin()
 def query_course():
     result = {"status": "failed"}
     status_code = 500
@@ -101,7 +86,7 @@ def query_course():
     return jsonify(result), status_code
 
 
-@blueprint.route("/remove", methods=["POST"])
+@api.route("/remove", methods=["POST"])
 @cross_origin()
 def remove_watch():
     result = {"status": "failed"}

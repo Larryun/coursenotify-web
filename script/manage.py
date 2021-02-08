@@ -4,7 +4,7 @@ from datetime import datetime
 
 from cn_v2.manager import WatcherManager, CourseManager
 
-term_code = {"DA": "202142", "FH": "202141"}
+term_code = {"DA": "202132", "FH": "202131"}
 
 arg_parser = ArgumentParser(description="Course Notify Manager")
 
